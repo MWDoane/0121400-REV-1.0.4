@@ -139,6 +139,10 @@ RTC_DATA_ATTR   uint8_t         DS_OP_MODE;
 //─────────────────────────────────────────────────────────────────────────────  
 
 //────────────────────────────── IMU VARIABLES ────────────────────────────────
+                    
+                    uint8_t     INT_STATUS;
+                    _Bool       IMU_DET_FLAG;
+                    uint8_t     IMU_BFR[16];
 
 //─────────────────────────────────────────────────────────────────────────────  
 
@@ -173,7 +177,7 @@ void    DataLoggerUpdate(void);                                 // Write data to
 void    VCP_DataUpdate(void);                                   // Writes data to VCP to confirm whats on SD card.
 _Bool   ButtonCheck(void);                                      // Checks the status of the push Buttons.
 float   Calculate_HR(void);                                     // Calculate the current Heat-Rate in BPM.
-void    MotionCheck(void);                                      // Checks for motion on the equipment.
+_Bool   MotionCheck(void);                                      // Checks for motion on the equipment.
 void    LPM_WakeUp(void);                                       // Lower-Power-Mode-Wake-Up routine.
 void    LPM_ShutDown(void);                                     // Lower-Power-Mode-Shut-Down routine.
 void    setup(void)                                             // setup Function Declaration.
@@ -190,7 +194,7 @@ void    setup(void)                                             // setup Functio
 //──────────────────────── PORT PIN INITIALIZATION ────────────────────────────
 
     pinMode(TXO_TO_LGR,OUTPUT);
-    pinMode(TST_PT,OUTPUT);
+    pinMode(TST_PIN,OUTPUT);
     pinMode(RXI_FROM_LGR,INPUT);
     pinMode(RED_LED,INPUT);
     pinMode(IR_LED,INPUT);
@@ -257,7 +261,7 @@ void    setup(void)                                             // setup Functio
         .DCDC3=OFF,                                             // Set DC-DC-3 to 0Vdc. 
         .LDO2=OFF,                                              // Turn the LCD-Back-Light-OFF.
         .LDO3=2700,                                             // Set the LCD-Module voltage to 2.700Vdc.
-        .GPIO0=2700,                                            // Set the IMU-voltage to 2.700Vdc.
+        .GPIO0=IMU_PWR,                                         // Turn on the IMU.
         .GPIO1=NOT_USED,                                        // GPIO-1, NOT USED.    
         .GPIO2=NOT_USED,                                        // GPIO-2, NOT USED.    
         .GPIO3=NOT_USED,                                        // GPIO-3, NOT USED.    
@@ -288,11 +292,93 @@ void    setup(void)                                             // setup Functio
 
 //──────────────── Inertial-Measurement-Unit INITIALIZATION ───────────────────
 
-/*
+
     IMU.Init();
     delay(100);
-    VCP.print("IMU Ready.\r\n");    
-*/
+    VCP.print("IMU Ready.\r\n");  
+
+    // Step#0:  Set the IMU's Accelerometer to ±16g's.
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_ACCEL_CFG_1);
+    I2C.requestFrom(IMU_ADR, 1);
+    IMU_BFR[0]=((I2C.read()) & (~ACCEL_FS_SEL));
+    IMU_BFR[0]=IMU_BFR[0] | ACCEL_FS_SEL;
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_ACCEL_CFG_1);       
+    I2C.write(IMU_BFR[0]);
+    I2C.endTransmission();    
+    VCP.printf("ACCEL_CFG_1: %b\r\n",IMU_BFR[0]);   
+
+    // Verify data
+    /*
+    {
+        I2C.beginTransmission(IMU_ADR);
+        I2C.write(IMU_ACCEL_CFG_1);
+        I2C.requestFrom(IMU_ADR, 1);
+        IMU_BFR[0]=I2C.read();
+        I2C.endTransmission();    
+        VCP.printf("ACCEL_CFG_1: %b",IMU_BFR[0]);
+    }
+    */
+
+    //Step#1:   Ensure Accelerometer is running.
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_PWR_MGMT_1);
+    I2C.requestFrom(IMU_ADR, 1);
+    IMU_BFR[0]=I2C.read() & 0x8F;
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_PWR_MGMT_1);
+    I2C.write(IMU_BFR[0]);
+    I2C.endTransmission();    
+    VCP.printf("PWR_MGMT_1: %b\r\n",IMU_BFR[0]);
+    
+    //Step#2:   Set Accelerometer LPF bandwidth to 218.1Hz.
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_ACCEL_CFG_2);
+    I2C.write(A_DLPF_CFG | DEC2_CFG);
+    I2C.endTransmission();    
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_ACCEL_CFG_2);
+    I2C.requestFrom(IMU_ADR, 1);
+    IMU_BFR[0]=I2C.read();
+    I2C.endTransmission();
+    VCP.printf("IMU_ACCEL_CFG_2: %b\r\n",IMU_BFR[0]);
+
+    //Step#3:   Set Accelerometer LPF bandwidth to 218.1Hz.
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_INT_EN);
+    I2C.requestFrom(IMU_ADR, 1);
+    IMU_BFR[0]=((I2C.read()) & (~(WOM_X_INT_EN | WOM_Y_INT_EN | WOM_Z_INT_EN)));
+    IMU_BFR[0]=(IMU_BFR[0] | (WOM_X_INT_EN | WOM_Y_INT_EN | WOM_Z_INT_EN));
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_INT_EN);
+    I2C.write(IMU_BFR[0]);
+    I2C.endTransmission();
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_INT_EN);
+    I2C.requestFrom(IMU_ADR, 1);
+    IMU_BFR[0]=I2C.read();
+    I2C.endTransmission();
+    VCP.printf("IMU_INT_EN: %b\r\n",IMU_BFR[0]);    
+
+    //Step#4:   Set the WOM threshold for all 3- axies.
+    I2C.beginTransmission(IMU_ADR);
+    I2C.write(IMU_ACCL_WOM_X_THR);
+    I2C.write(WOM_THR_VALUE);
+    I2C.write(WOM_THR_VALUE);
+    I2C.write(WOM_THR_VALUE);
+    I2C.endTransmission();
+    VCP.printf("WOM_THR: %b\r\n",WOM_THR_VALUE);    
+    
+    //Step#5:   Enable Accelerometer Hardware Intelligence.
+    I2C.beginTransmission(IMU_ADR);
+    
+
+
+
+
+
+
 
 
 
@@ -322,7 +408,7 @@ if(!SKIP_INIT)
     RTC.begin();
     RTC.GetTime(&RTC_Time);
     RTC.GetData(&RTC_Date);
-    VCP.print("RTC Ready.\r\n");
+    VCP.print("RTC Ready.\r\n\r\n");
     VCP.print(String(RTC_Date.Month)+"-"+
               String(RTC_Date.Date)+"-"+
               String(RTC_Date.Year)+",");
@@ -332,7 +418,7 @@ if(!SKIP_INIT)
     VCP.print(String(RTC_Time.Minutes)+":");
     if (RTC_Time.Seconds<10)
       { VCP.print('0'); }
-    VCP.print(String(RTC_Time.Seconds)+"\r\n");
+    VCP.print(String(RTC_Time.Seconds)+"\r\n\r\n");
     PrevSecond=-1;    
 }
 
@@ -352,7 +438,7 @@ if(!SKIP_INIT)
     PMIC.setEXTEN(EXT_5V_ON);
     delay(25);
     SD_LGR.begin(115200,SERIAL_8N1,RXI_FROM_LGR,TXO_TO_LGR);
-    delay(250);
+    delay(50);
     VCP.print("Logger Initalizing...\r\n");
     SD_LGR_FLAG=CLEAR;
     SD_LOG_TMR=SD_LGR_TME;
@@ -371,7 +457,7 @@ if(!SKIP_INIT)
 
     if(!SD_LOG_TMR)
     {
-        VCP.print("SD Error or No card.\r\n");                
+        VCP.print("SD Error or No card!\r\n");                
         PMIC.setEXTEN(EXT_5V_OFF);
     }
 
@@ -396,7 +482,7 @@ if(!SKIP_INIT)
         }
         if(!SD_LOG_TMR)
         {
-            VCP.print("SD Error or No card.\r\n");                
+            VCP.print("SD Error or No card!\r\n");                
             PMIC.setEXTEN(EXT_5V_OFF);
         }
     }

@@ -487,16 +487,13 @@ MotionCheck     Determines if the Salutron input signal is from a person on the
 
 Arguments:      None.
 
-Returns:        Nothing
+Returns:        Return the IMU-DETection-FLAG's updated state.
 ───────────────────────────────────────────────────────────────────────────────
 */
-void    MotionCheck(void)
+_Bool    MotionCheck(void)
 {
     return;
 }
-
-
-
 
 
 /*
@@ -621,11 +618,11 @@ void    LPM_ShutDown(void)
     //Put IMU into sleep.
     uint8_t New_Value;
     I2C.beginTransmission(IMU_ADR);
-    I2C.write(IMU_PWR_MGMT1_REG);
+    I2C.write(IMU_PWR_MGMT_1);
     I2C.requestFrom(IMU_ADR, 1);
     New_Value = (I2C.read() | IMU_SLP_FLAG);
     I2C.beginTransmission(IMU_ADR);
-    I2C.write(IMU_PWR_MGMT1_REG);
+    I2C.write(IMU_PWR_MGMT_1);
     I2C.write(New_Value);
     I2C.endTransmission();
 

@@ -92,7 +92,7 @@ extern    void    DataLoggerUpdate(void);                                   // W
 extern    void    VCP_DataUpdate(void);                                     // Writes data to VCP to confirm whats on SD card.
 extern    _Bool   ButtonCheck(void);                                        // Checks the status of the push Buttons.
 extern    float   Calculate_HR(void);                                       // Calculate the current Heat-Rate in BPM.
-extern    void    MotionCheck(void);
+extern    _Bool   MotionCheck(void);
 extern    void    LPM_WakeUp(void);                                         // Lower-Power-Mode-Wake-Up routine.
 extern    void    LPM_ShutDown(void);                                       // Lower-Power-Mode-Shut-Down routine.
 /*

@@ -40,6 +40,7 @@
 #include    <I2C_AXP192.h>
 #include    <Wire.h>
 #include    <RTC.h>
+#include    "utility/MPU6886.h"
 #include    "utility/Speaker.h"
 #include    "driver/adc.h"
 #include    "stdio.h"
@@ -122,9 +123,9 @@
 #define     PBTN_DB_TME         (50u)                       // Push-BuTtoN-De-Bouce-TiME in mS.
 #define     LED_ON_TME          (15u)                       // LED-ON-TiME in mS.
 #define     LCD_ON_TME          (10000u)                    // LCD-DiSPlay-TiME in mS.
-#define     SD_LGR_TME          (150u)                      // µSD Card-LoGgeR-TiME in mS.
+#define     SD_LGR_TME          (100u)                      // µSD Card-LoGgeR-TiME in mS.
 #define     SYS_ACT_TME         (25000u)                    // SYStem-ACTivity-TiME in mS.
-#define     DSP_MODE_TME        (250u)                       // SYStem-ACTivity-TiME in mS.
+#define     DSP_MODE_TME        (250u)                      // SYStem-ACTivity-TiME in mS.
 
 //───────────────────────── VCP-Command DEFINITIONS ───────────────────────────
 
@@ -240,9 +241,30 @@
 
 #define     IMU_PWR             (2800u)                     // IMU-PoWeR setting.
 #define     IMU_ADR             (0x68)                      // IMU-Sub-ADdRess.
-#define     IMU_PWR_MGMT1_REG   (0x6B)                      // IMU-PoWeR-ManaGeMenT-1-REGister.
-#define     IMU_SLP_FLAG        (0x40)                      // IMU-SLeeP-FLAG.
+#define     IMU_ACCEL_CFG_1     (0x1C)                      // IMU-ACCELeration-ConFiGuration-1-Register.
+#define     IMU_ACCEL_CFG_2     (0x1D)                      // IMU-ACCELeration-ConFiGuration-2-Register.
+#define     IMU_ACCL_WOM_X_THR  (0x20)                      // IMU-ACCELeration-WOM-X axis-THReshold-Register.
+#define     IMU_ACCL_WOM_Y_THR  (0x21)                      // IMU-ACCELeration-WOM-Y axis-THReshold-Register.
+#define     IMU_ACCL_WOM_Z_THR  (0x22)                      // IMU-ACCELeration-WOM-Z axis-THReshold-Register.
+#define     IMU_INT_PIN_CFG     (0x37)                      // IMU-INTerrupt-PIN-ConFiGuration-Register.
+#define     IMU_INT_EN          (0x38)                      // IMU-INTerrupt-ENable-Register.
+#define     IMU_INT_STAT        (0x3A)                      // IMU-INTerrupt-STATus-Register.
+#define     ACCEL_INTEL_CTRL    (0x69)                      // ACCELerometer-INTELligence-ConTRL-Register.
+#define     IMU_PWR_MGMT_1      (0x6B)                      // IMU-PoWeR-ManaGeMenT-1-Register.
+#define     IMU_PWR_MGMT_2      (0x6C)                      // IMU-PoWeR-ManaGeMenT-2-Register.
 #define     IMU_INT_EN_REG      (0x38)                      // IMU-INTerrupt-ENable-REGister.
+
+//──────────────── IMU BIT DEFINITIONS ────────────────────
+
+#define     IMU_SLP_FLAG        (0b01000000)                // IMU-SLeeP-FLAG.
+#define     ACCEL_FS_SEL        (0b00011000)                // ACCELerometer-Full-Scale-SELect bits.
+#define     A_DLPF_CFG          (0b00000001)                // Bit Position of A-DLPF-CFG in ACCEL-CFG-2.
+#define     ACCEL_FCHOICE_B     (0b00001000)                // Bit Position of ACCEL-FCHOICE-B in ACCEL-CFG-2.
+#define     DEC2_CFG            (0b00100000)                // 16 sample average pattern, Bits[5,4].
+#define     WOM_X_INT_EN        (0b10000000)                // WOM-X axis-INT-ENable bit.
+#define     WOM_Y_INT_EN        (0b01000000)                // WOM-Y axis-INT-ENable bit.
+#define     WOM_Z_INT_EN        (0b00100000)                // WOM-Z axis-INT-ENable bit.
+#define     WOM_THR_VALUE       (0b00011111)                // WOM-THReshold-VALUE for all 3-axies.
 
 //───────────────────────── LCD-DiSPlay DEFINITIONS ───────────────────────────
 
