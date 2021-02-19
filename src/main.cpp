@@ -68,8 +68,6 @@ void loop(void)
 // CHECK VARIOUS FUNCTION:    Check Button, Change/update current selected screen.
 //─────────────────────────────────────────────────────────────────────────────    
 
-  if(MotionCheck())                             // Check for a person on the equipment.
-    {   LPM_ShutDown();   }                     // If so, power down.
     ButtonCheck();                              // Check the Push Buttons.
     BackLightControl();                         // See if BackLight need to be changed.
     DisplayPowerMonitor();                      // See if the Power-Monitor screen is to be Displayed.
@@ -93,7 +91,6 @@ void loop(void)
     if(!SYS_ACT_TMR)                            // Check to see if the SYStem-ACTivity-TiMeR is CLEAR.
     {   LPM_ShutDown();  }                      // If so, put the device into deep-sleep.
   } while(!digitalRead(SAL_PULSE));             // Wait for the Salutron sPulse line to go low.
-//    } while(ON);   
   delay(40);                                    // Wait a bit before looping.
 }
 /*END OF FILE */

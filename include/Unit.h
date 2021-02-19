@@ -43,9 +43,9 @@ extern              uint8_t             I2C_BFR[];
 
 extern  RTC_DATA_ATTR   uint32_t        DS_CRNT_PULSE_CNT;
 extern  RTC_DATA_ATTR   uint32_t        DS_PRVS_PULSE_CNT;
-extern  RTC_DATA_ATTR   float           DS_ACC_X_CAL_VAL;
-extern  RTC_DATA_ATTR   float           DS_ACC_Y_CAL_VAL;
-extern  RTC_DATA_ATTR   float           DS_ACC_Z_CAL_VAL;
+extern  RTC_DATA_ATTR   int16_t         DS_ACC_X_CAL_VAL;
+extern  RTC_DATA_ATTR   int16_t         DS_ACC_Y_CAL_VAL;
+extern  RTC_DATA_ATTR   int16_t         DS_ACC_Z_CAL_VAL;
 
 extern              float               accX;
 extern              float               accY;

@@ -539,16 +539,15 @@ _Bool    MotionCheck(void)
             {   IMU_DET_FLAG=SET;   }
             if((int(accZ)>IMU_DET_THLD) || (int(accZ)<(IMU_DET_THLD*-1)))
             {   IMU_DET_FLAG=SET;   }
-            VCP.printf("X:%d  Y:%d  Z:%d   ", (int)accX, (int)accY, (int)accZ);
-            VCP.println();
             delay(10);
         }
         while(IMU_CHK_TMR);
         PMIC.setGPIO0(IMU_PWR_OFF);
         if(IMU_DET_FLAG)
-        {   VCP.print("Motion Detected!\r\n");      }
-        else if(!IMU_DET_FLAG)
-        {   VCP.print("No Motion Detected.\r\n");   }    
+        {   
+            VCP.print("Motion Detected!\r\n");      
+            VCP.printf("X:%d  Y:%d  Z:%d   ", (int)accX, (int)accY, (int)accZ);        
+        }
         return  IMU_DET_FLAG;
     }
     return  CLEAR;

@@ -37,11 +37,11 @@
 
 //──────────────────────── RTC-DEEP-SLEEP VARIABLES ───────────────────────────
 
-RTC_DATA_ATTR   uint32_t        DS_CRNT_PULSE_CNT;
-RTC_DATA_ATTR   uint32_t        DS_PRVS_PULSE_CNT;
-RTC_DATA_ATTR   float           DS_ACC_X_CAL_VAL;
-RTC_DATA_ATTR   float           DS_ACC_Y_CAL_VAL;
-RTC_DATA_ATTR   float           DS_ACC_Z_CAL_VAL;
+    RTC_DATA_ATTR   uint32_t        DS_CRNT_PULSE_CNT;
+    RTC_DATA_ATTR   uint32_t        DS_PRVS_PULSE_CNT;
+    RTC_DATA_ATTR   int16_t         DS_ACC_X_CAL_VAL;
+    RTC_DATA_ATTR   int16_t         DS_ACC_Y_CAL_VAL;
+    RTC_DATA_ATTR   int16_t         DS_ACC_Z_CAL_VAL;
 
 //─────────────────────────────────────────────────────────────────────────────  
 
@@ -137,7 +137,7 @@ RTC_DATA_ATTR   float           DS_ACC_Z_CAL_VAL;
                     _Bool       IMU_INIT_FLAG;
                     _Bool       IMU_DET_FLAG;
                     uint8_t     IMU_WOM_THLD=WOM_THR_VALUE;
-                    uint8_t     IMU_DET_THLD=15;
+                    uint8_t     IMU_DET_THLD=40;
 
                     float       accX=0.0f;
                     float       accY=0.0f;
@@ -197,7 +197,7 @@ void    setup(void)                                             // setup Functio
 //──────────────────────── M5STICK-C INITIALIZATION ───────────────────────────
 
     M5.begin(CLEAR,CLEAR,CLEAR);    
-    delay(5000);
+    delay(500);
 //    esp_wifi_init(NULL);
 //    esp_wifi_deinit();
 //    esp_bt_controller_deinit();
@@ -289,13 +289,16 @@ void    setup(void)                                             // setup Functio
     AXP.DisableCoulombcounter();                                // In the M5's Library.
     PMIC_CLR_IRQ();                                             // CLEAR out PMIC IRQ's.
     PMIC_TMP_MNTR(ENABLE);                                      // ENable the PMIC Internal Temperature Monitor.
-    PMIC_RTC_BKUP_CHRG(ENABLE,BKUP_CHRG_400uA);                 // ENable the RTC battery BacK-UP CHaRGe @ 400µA.
+    PMIC_RTC_BKUP_CHRG(ENABLE,BKUP_CHRG_200uA);                 // ENable the RTC battery BacK-UP CHaRGe @ 200µA.
 
-   //Turn off the RTC CLK Output.
-    I2C.beginTransmission(RTC_ADR);
-    I2C.write(CLKOUT_REG);
-    I2C.write(CLEAR);
-    I2C.endTransmission();    
+   if(!SKIP_INIT)
+   {
+        //Turn off the RTC CLK Output.
+        I2C.beginTransmission(RTC_ADR);
+        I2C.write(CLKOUT_REG);
+        I2C.write(CLEAR);
+        I2C.endTransmission();    
+   }
     VCP.print("PMU Ready.\r\n");
 #endif    
 
@@ -303,7 +306,6 @@ void    setup(void)                                             // setup Functio
 
 //──────────────── Inertial-Measurement-Unit INITIALIZATION ───────────────────
 
-#if(IMU_T)
 if(!SKIP_INIT)
 {
     delay(10);
@@ -311,7 +313,14 @@ if(!SKIP_INIT)
     VCP.print("IMU Initializing");
     IMU_Calibration();
 }
-#endif
+
+//────────────────────────── IMU Check for Motion ─────────────────────────────
+
+if(SKIP_INIT)
+{
+    if(MotionCheck())                             // Check for a person on the equipment.
+        {   LPM_ShutDown();   }                   // If so, power down.
+}
 
 //───────────────────── Real-Time-Clock INITIALIZATION ────────────────────────
 
@@ -454,8 +463,6 @@ if(SKIP_INIT)
     LCD_BL_EN_FLAG=SET;
     LCD_ON_TMR=CLEAR;     
 }    
-    if(SYS_PWR_ON_FLAG)
-    {   attachInterrupt(SAL_PULSE,SAL_CHK_ISR,RISING);  }
     SYS_ACT_TMR=SYS_ACT_TME;
     SYS_PWR_ON_FLAG=CLEAR;   
     LCD_ON_TMR=LCD_ON_TME;
