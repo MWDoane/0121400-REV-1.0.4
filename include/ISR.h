@@ -14,7 +14,7 @@
     Project:    M5CP Salutron-Phantom-Detecter
     Author:     Mark Doane
     Date:       12/30/20
-    File:       ISR.h                 -Interrupt-Service-Routine header file.
+    File:       ISR.cpp               -Interrupt-Service-Routine functions.
     Software:   0121400               -Software number.
     Board:      M5Stick-C Plus        -Color Display, WiFi, Bluetooth, Three switchs, Red & Ir LEDs, IMU, PMU, RTC, Various I/O.
                                        will include an external 18650 Hat, and a proto Hat with the µSD data logger.  Interface
@@ -37,11 +37,11 @@
 //────────────────────────────── ISR VARIABLES ────────────────────────────────
 
     extern  volatile    uint32_t        UNIT_MODE;                          // Contains all UNIT control bits for various MODE's.
-    extern  volatile    uint32_t        sPULSE_START_TME;                      // 32-Bit, Current micros START-TiME in µS.
-    extern  volatile    uint32_t        sPULSE_STOP_TME;                       // 32-Bit, ELAPSED-TiME in µS.
-    extern  volatile    uint32_t        sPULSE_ELAPSED_TME;                    // 32-Bit, ELAPSED-TiME in µS.
-    extern  volatile    uint32_t        PRVS_PULSE_CNT;                      // PReVious-PULSE-CouNT.
-    extern  volatile    uint32_t        CRNT_PULSE_CNT;                          // Current PULSE-CouNT.
+    extern  volatile    uint32_t        sPULSE_START_TME;                   // 32-Bit, Current micros START-TiME in µS.
+    extern  volatile    uint32_t        sPULSE_STOP_TME;                    // 32-Bit, ELAPSED-TiME in µS.
+    extern  volatile    uint32_t        sPULSE_ELAPSED_TME;                 // 32-Bit, ELAPSED-TiME in µS.
+    extern  volatile    uint32_t        PRVS_PULSE_CNT;                     // PReVious-PULSE-CouNT.
+    extern  volatile    uint32_t        CRNT_PULSE_CNT;                     // Current PULSE-CouNT.
     extern  volatile    _Bool           SAL_SIG_DET;                        // SALutron-SIGnal-DETect FLAG.
     
     extern  volatile    _Bool           LCD_BL_EN_FLAG;                     // LCD-Back-Light-ENable-FLAG.
@@ -58,8 +58,9 @@
     extern  volatile    uint16_t        PBTN_DB_TMR;                        // Push-BuTtoN-De-Bouce-TiMeR, 1mS intervals.
     extern  volatile    uint16_t        SYS_PWR_ON_TMR;                     // SYStem-PoWeR-ON-TiMeR before sleep, 1mS intervals.    
     extern  volatile    uint8_t         SD_LOG_TMR;                         // 8-Bit 1mS OPEN-LOG-TiMeR.
-    extern  volatile    uint8_t         sPULSE_HIGH_TME;                        // SALutron-sPulse SIGnal-TiMeR, 1mS intervals.
+    extern  volatile    uint8_t         sPULSE_HIGH_TME;                    // SALutron-sPulse SIGnal-TiMeR, 1mS intervals.
     extern  volatile    uint16_t        SYS_ACT_TMR;                        // SYStem-ACTivity-TiMeR, before sleep, 1mS intervals.    
+    extern  volatile    uint16_t        IMU_CHK_TMR;                        // IMU-CHecK for motion-TiMeR.
 
     extern              I2C_AXP192      PMIC;    
     extern              M5Display       LCD;

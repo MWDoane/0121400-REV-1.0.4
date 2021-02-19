@@ -183,7 +183,7 @@ void loop()
     if((PULSE_CNT>=(PRVS_PULSE_CNT+3)))
     {
     DateTime CurrentTime=RTC.now();
-    if (CurrentTime.second() != PrevSecond)                                     // Have the seconds changed.
+    if (CurrentTime.second() != PRVS_SECOND)                                     // Have the seconds changed.
       {
         VCP.print(String(CurrentTime.month())+"-");                             // Print month.
         VCP.print(String(CurrentTime.day())+"-");                               // Print date (day of month).
@@ -219,14 +219,14 @@ void loop()
       if(SAL_SIG_DET)
       {
         DateTime CurrentTime=RTC.now();                                         // Update all the RTC registers.
-        if (CurrentTime.second() != PrevSecond)
+        if (CurrentTime.second() != PRVS_SECOND)
         {
-          if(CurrentTime.day() != PrevDay)
+          if(CurrentTime.day() != PRVS_DAY)
           {
             SD_LGR.print(String(CurrentTime.month())+"-");                        // Print month.
             SD_LGR.print(String(CurrentTime.day())+"-");                          // Print date (day of month).
             SD_LGR.println(String(CurrentTime.year()));                           // Print Year.
-            PrevDay=CurrentTime.day();
+            PRVS_DAY=CurrentTime.day();
           }
           SD_LGR.print(String(CurrentTime.hour())+":");                         // Print hour.
           if (CurrentTime.minute() < 10)                                        // Are the minutes are < 10?
@@ -249,7 +249,7 @@ void loop()
             {   SD_LGR.print("-");   }
           }        
           SD_LGR.println();
-          PrevSecond=CurrentTime.second();                                      // Update the Previou-Second.
+          PRVS_SECOND=CurrentTime.second();                                      // Update the Previou-Second.
         }
       }
 #endif      

@@ -81,42 +81,6 @@ void    IRAM_ATTR BTN_CHK_ISR(void)
     if(!PBTN_DB_TMR)
     {
         PBTN_DET_FLAG=SET;
-/*
-        if(FRONT_PB)
-        {
-            if(LCD_BL_EN_FLAG)
-            {
-                if(SAL_DSP_FLAG)
-                {
-                    if(CRNT_PULSE_CNT)
-                    {
-                        CRNT_PULSE_CNT=CLEAR;  
-                        PRVS_PULSE_CNT=CLEAR;         
-                        String EventCount=String(CRNT_PULSE_CNT);            
-                        LCD.drawString(EventCount+"     ",175,61,2);   
-                    }
-                }
-            }
-        }
-
-        if(TOP_PB)
-        {
-            if(LCD_BL_EN_FLAG)
-            {        
-                if(SAL_DSP_FLAG)
-                {
-                    SAL_DSP_FLAG=CLEAR;
-                    PWR_DSP_FLAG=SET;
-                }
-                else if(PWR_DSP_FLAG)
-                {
-                    SAL_DSP_FLAG=SET;
-                    PWR_DSP_FLAG=CLEAR;
-                }
-            }
-        DSP_SET_FLAG=CLEAR;
-        }
-*/        
         PBTN_DB_TMR=PBTN_DB_TME;
         LCD_ON_TMR=LCD_ON_TME;        
         SYS_ACT_TMR=SYS_ACT_TME;        
@@ -202,6 +166,14 @@ void    IRAM_ATTR TMR_CHK_ISR(void)
     {   DSP_MODE_TMR--;   }
 
 //─────────────────────────────────────────────────────────────────────────────
+
+//──────────────────────── SERVICE IMU-CHECK-TIMER ────────────────────────────
+
+    if(IMU_CHK_TMR!=CLEAR)
+    {   IMU_CHK_TMR--;   }
+
+//─────────────────────────────────────────────────────────────────────────────
+
 
 //────────────────────── SERVICE SYSTEM-ACTIVITY-TIMER ────────────────────────
 

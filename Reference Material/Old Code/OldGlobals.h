@@ -74,8 +74,8 @@
                 bool        SD_LGR_FLAG=CLEAR;                     // SD-LoGgeR-STATE bit.
                 uint32_t    RTC_CHK_TMR=CLEAR;                      // 8-Bit 1mS OPEN-LOG-TiMeR.    (Temp. uint32_t)
                 bool        RTC_STATE=CLEAR;                        // RTC-LoGgeR-STATE bit.
-                uint8_t     PrevSecond=CLEAR;
-                uint8_t     PrevDay=CLEAR;
+                uint8_t     PRVS_SECOND=CLEAR;
+                uint8_t     PRVS_DAY=CLEAR;
 
     volatile    uint32_t    sPULSE_START_TME=CLEAR;                    // 32-Bit, Current micros START-TiME in µS.         (Default=0)
     volatile    uint32_t    sPULSE_STOP_TME=CLEAR;                     // 32-Bit, ELAPSED-TiME in µS.                      (Default=0)
@@ -242,7 +242,7 @@ void    setup(void)                                       // setup Function Decl
 //───────────────────── Real-Time-Clock INITIALIZATION ────────────────────────
 
 #if(RTC_MODULE)
-    PrevSecond=-1;
+    PRVS_SECOND=-1;
     RTC.begin();
 //    if(!RTC.isrunning() || RTC.lostPower())
 //    {   RTC.adjust(DateTime(F(__DATE__), F(__TIME__))); }

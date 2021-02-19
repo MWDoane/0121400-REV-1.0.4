@@ -55,7 +55,7 @@
 //──────────────────── UNIT-TEST DEFINITIONS ────────────────────────
 
 #define     VCP_SD_LOG_T        (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control console communications-Testing of the SD card.
-#define     VCP_STATE_T         (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control console communications-Testing.
+#define     VCP_T               (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control console communications-Testing.
 #define     LCD_DSP_T           (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control LCD-Display-Test functions.
 #define     DSP_LOGO_T          (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control to Display the True Fitnesss Logo.   (Graphical)
 #define     LCD_TXT_DSP_T       (_DISABLED)                 // Change the valve to (_ENABLED or _DISABLED) for control to Display the True Fitnesss Logo.   (Plain Text)
@@ -65,9 +65,9 @@
 #define     SD_LOGGER_T         (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of the SD Data-LOGGER-Testing.
 #define     RTC_T               (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of the RTC-Testing.
 #define     SET_RTC_T           (_DISABLED)                 // Change the valve to (_ENABLED or _DISABLED) for control of Setting-RTC-Testing.
-#define     IMU_T               (_DISABLED)                 // Change the valve to (_ENABLED or _DISABLED) for control of IMU-Testing.
+#define     IMU_T               (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of IMU-Testing.
 #define     DEEPSLEEP_T         (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of DEEP-SLEEP-Testing.
-#define     PMIC_STATE_T        (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of PMIC-Testing.
+#define     PMIC_T              (_ENABLED)                  // Change the valve to (_ENABLED or _DISABLED) for control of PMIC-Testing.
 
 //──────────────────────────── UNIT-MODULE NAMES ──────────────────────────────
 
@@ -122,8 +122,8 @@
 
 #define     PBTN_DB_TME         (50u)                       // Push-BuTtoN-De-Bouce-TiME in mS.
 #define     LED_ON_TME          (15u)                       // LED-ON-TiME in mS.
-#define     LCD_ON_TME          (10000u)                    // LCD-DiSPlay-TiME in mS.
-#define     SD_LGR_TME          (100u)                      // µSD Card-LoGgeR-TiME in mS.
+#define     LCD_ON_TME          (10000u)                     // LCD-DiSPlay-TiME in mS.
+#define     SD_LGR_TME          (150u)                      // µSD Card-LoGgeR-TiME in mS.
 #define     SYS_ACT_TME         (25000u)                    // SYStem-ACTivity-TiME in mS.
 #define     DSP_MODE_TME        (250u)                      // SYStem-ACTivity-TiME in mS.
 
@@ -137,6 +137,8 @@
 #define     LCD_BL_OFF          (OFF)                       // Turn the LCD-Back-Light-OFF.
 #define     LCD_BL_DIM          (2700u)                     // 2.700V for a DIM-LCD-Back-Light.
 #define     LCD_BL_BRT          (2950u)                     // 2.950V for a BRighT-LCD-Back-Light.
+#define     LCD_CTRL_OFF        (OFF)                       // Turn the LCD-CoNTRoLler to turn OFF.
+#define     LCD_CTRL_ON         (2700u)                     // 2.700V for the LCD-CoNTRoLler to turn ON.
 
 //──────────────────────────── PMIC DEFINITIONS ───────────────────────────────
 
@@ -144,28 +146,41 @@
 #define     EXT_5V_OFF          (OFF)                       // Turn OFF the EXTernal 5V step-up supply.
 #define     RTC_BCKUP_ON        (ON)                        // Turn ON the RTC-BaCK-UP battery.
 #define     RTC_BCKUP_OFF       (OFF)                       // Turn OFF the RTC-BaCK-UP battery.
-#define     MIC_PWR_ON          (2800u)                     // 2.800V to PoWeR the MIC-ON.
-#define     MIC_PWR_OFF         (OFF)                       // Turn the MIC-PoWeR-OFF.
+#define     IMU_PWR_ON          (2700u)                     // 2.700V to PoWeR the IMU.
+#define     IMU_PWR_OFF         (OFF)                       // Turn the IMU-PoWeR-OFF.
+#define     DCDC_2_CTRL_REG     (0x10)                      // PMIC's DC-DC-1&3-ConTRoL-REGister address.
+#define     DCDC_1_3_CTRL_REG   (0x12)                      // PMIC's DC-DC-1&3-ConTRoL-REGister address.
+#define     LDO_2_3_CTRL_REG    (0x12)                      // PMIC's LDO-2&3-ConTRoL-REGister address.
 #define     PMIC_ADR            (0x34)                      // PMIC (AXP192) Sub-ADdRess.
-#define     GPIO0_CTRL_REG      (0x90)                      // PMIC's GPIO0-ConTRoL-REGister address.
-#define     GPIO1_CTRL_REG      (0x92)                      // PMIC's GPIO1-ConTRoL-REGister address.
-#define     GPIO2_CTRL_REG      (0x93)                      // PMIC's GPIO2-ConTRoL-REGister address.
+#define     BAT_BKUP_CTRL_REG   (0x35)                      // PMIC's BATtery-BacK-UP-ConTRoL-REGister address.
+#define     IRQ_1_STAT          (0x44)                      // PMIC's IRQ-1-STATus-REGister address.
+#define     IRQ_2_STAT          (0x45)                      // PMIC's IRQ-2-STATus-REGister address.
+#define     IRQ_3_STAT          (0x46)                      // PMIC's IRQ-3-STATus-REGister address.
+#define     IRQ_4_STAT          (0x47)                      // PMIC's IRQ-4-STATus-REGister address.
 #define     ADC_EN1_CTRL_REG    (0x82)                      // PMIC's ADC-ENable-1-ConTRoL-REGister address.
 #define     ADC_EN2_CTRL_REG    (0x83)                      // PMIC's ADC-ENable-2-ConTRoL-REGister address.
 #define     ADC_SR_TS_CTRL_REG  (0x84)                      // PMIC's ADC-Temperature-Sensor-ConTRoL-REGister address.
 #define     OVR_TMP_CTRL_REG    (0x8F)                      // PMIC's OVeR-TeMPerature-ConTRoL-REGister address.
-#define     BAT_BKUP_CTRL_REG   (0x35)                      // PMIC's BATtery-BacK-UP-ConTRoL-REGister address.
-#define     DCDC_1_3_CTRL_REG   (0x12)                      // PMIC's DC-DC-1&3-ConTRoL-REGister address.
-#define     LDO_2_3_CTRL_REG    (0x12)                      // PMIC's LDO-2&3-ConTRoL-REGister address.
-#define     DCDC_2_CTRL_REG     (0x10)                      // PMIC's DC-DC-1&3-ConTRoL-REGister address.
+#define     GPIO0_CTRL_REG      (0x90)                      // PMIC's GPIO0-ConTRoL-REGister address.
+#define     GPIO1_CTRL_REG      (0x92)                      // PMIC's GPIO1-ConTRoL-REGister address.
+#define     GPIO2_CTRL_REG      (0x93)                      // PMIC's GPIO2-ConTRoL-REGister address.
+#define     GPIO_X_DISABLE      (-1)                        // PMIC's GPIO value to disable that output.
+
 
 //──────────────── PMIC BIT DEFINITIONS ───────────────────
 
 #define     GPIOx_FLOAT         (0b00000110)                // PMIC's GPIO-x's value for FLOATing pin state.
-#define     BAT_BKUP_CHRG_EN    (0b00100000)                // PMIC's BATtery-BacK-UP-CHaRGe-ENable control.
+#define     BAT_BKUP_CHRG_EN    (0b10000000)                // PMIC's BATtery-BacK-UP-CHaRGe-ENable control.
 #define     DCDC_1_PWR_EN       (0b00000001)                // PMIC's DC-DC-1-PoWeR-ENable control.
 #define     TS_PIN_CRNT         (0b00000011)                // PMIC's Temperature-Sensor-PIN-CuRreNT settings.
 #define     OVR_TMP_EN          (0b00000100)                // PMIC's OVeR-TeMPerature-ENable, reverse logic.
+#define     INT_TMP_MNTR_EN     (0b10000000)                // PMIC's INTernal-TeMPerature-MoNiToR-ENable.
+#define     BKUP_CHRG_50uA      (0b00000000)                // PMIC's value for a 50µA BacK-UP battery CHarGe current.
+#define     BKUP_CHRG_100uA     (0b00000001)                // PMIC's value for a 100µA BacK-UP battery CHarGe current.
+#define     BKUP_CHRG_200uA     (0b00000010)                // PMIC's value for a 200µA BacK-UP battery CHarGe current.
+#define     BKUP_CHRG_400uA     (0b00000011)                // PMIC's value for a 400µA BacK-UP battery CHarGe current.
+#define     BKUP_CHRG_CLEAR     (0b00000011)                // PMIC's value for BacK-UP battery CHarGe CLEARed.
+#define     BKUP_CHRG_DSABLE    (0b00000000)                // PMIC's value for BacK-UP battery CHarGe when DiSABLEd.
 
 //───────────────────────────── RTC DEFINITIONS ───────────────────────────────
 
@@ -239,8 +254,8 @@
 
 //───────────────────────────── IMU DEFINITIONS ───────────────────────────────
 
-#define     IMU_PWR             (2800u)                     // IMU-PoWeR setting.
 #define     IMU_ADR             (0x68)                      // IMU-Sub-ADdRess.
+#define     SMPLRT_DIV          (0x19)                      // SaMPLe-RaTe-DIVider-Register.
 #define     IMU_ACCEL_CFG_1     (0x1C)                      // IMU-ACCELeration-ConFiGuration-1-Register.
 #define     IMU_ACCEL_CFG_2     (0x1D)                      // IMU-ACCELeration-ConFiGuration-2-Register.
 #define     IMU_ACCL_WOM_X_THR  (0x20)                      // IMU-ACCELeration-WOM-X axis-THReshold-Register.
@@ -256,15 +271,26 @@
 
 //──────────────── IMU BIT DEFINITIONS ────────────────────
 
-#define     IMU_SLP_FLAG        (0b01000000)                // IMU-SLeeP-FLAG.
-#define     ACCEL_FS_SEL        (0b00011000)                // ACCELerometer-Full-Scale-SELect bits.
-#define     A_DLPF_CFG          (0b00000001)                // Bit Position of A-DLPF-CFG in ACCEL-CFG-2.
-#define     ACCEL_FCHOICE_B     (0b00001000)                // Bit Position of ACCEL-FCHOICE-B in ACCEL-CFG-2.
-#define     DEC2_CFG            (0b00100000)                // 16 sample average pattern, Bits[5,4].
+#define     IMU_SLP_FLAG        (0b01000000)                // IMU-SLeeP-FLAG.                              (In IMU_PWR_MGMT_1)
+#define     CYCLE               (0b00100000)                // IMU-CYCLE bit.                               (In IMU_PWR_MGMT_1)
+#define     ACCEL_FS_SEL        (0b00011000)                // ACCELerometer-Full-Scale-SELect bits.        (In IMU_ACCEL_CFG_1)
+#define     ACCEL_FS_2g         (0b00000000)                // ACCELerometer-Full-Scale for ±2g's.          (In IMU_ACCEL_CFG_1)
+#define     ACCEL_FS_4g         (0b00001000)                // ACCELerometer-Full-Scale for ±4g's.          (In IMU_ACCEL_CFG_1)
+#define     ACCEL_FS_8g         (0b00010000)                // ACCELerometer-Full-Scale for ±8g's.          (In IMU_ACCEL_CFG_1)
+#define     ACCEL_FS_16g        (0b00011000)                // ACCELerometer-Full-Scale for ±16g's.         (In IMU_ACCEL_CFG_1)
+#define     A_DLPF_CFG          (0b00000001)                // Bit Position of A-DLPF-CFG.                  (In IMU_ACCEL_CFG_2)
+#define     ACCEL_FCHOICE_B     (0b00001000)                // Bit Position of ACCEL-FCHOICE-B.             (In IMU_ACCEL_CFG_2)
+#define     DEC2_CFG            (0b00100000)                // 16 sample average pattern, Bits[5,4].        (In IMU_ACCEL_CFG_2)
 #define     WOM_X_INT_EN        (0b10000000)                // WOM-X axis-INT-ENable bit.
 #define     WOM_Y_INT_EN        (0b01000000)                // WOM-Y axis-INT-ENable bit.
 #define     WOM_Z_INT_EN        (0b00100000)                // WOM-Z axis-INT-ENable bit.
 #define     WOM_THR_VALUE       (0b00011111)                // WOM-THReshold-VALUE for all 3-axies.
+#define     WOM_TH_MODE         (0b00000001)                // WOM-THreshold-MODE bit.                      (In ACCEL_INTEL_CTRL)
+#define     WOM_INT_STATUS      (0b11100000)                // WOM-INTerrupt-STATUS bits.                   (In IMU_INT_STATUS)
+#define     ACCEL_INTEL_MODE    (0b01000000)                // ACCELerometer-INTELligence-MODE bit.         (In ACCEL_INTEL_CTRL)
+#define     ACCEL_INTEL_EN      (0b10000000)                // ACCELerometer-INTELligence-ENable bit.       (In ACCEL_INTEL_CTRL)
+#define     SMPLRT_50Hz         (0x19)                      // SaMPLe-RaTe for 50Hz.
+
 
 //───────────────────────── LCD-DiSPlay DEFINITIONS ───────────────────────────
 
@@ -283,12 +309,14 @@
 
 #define     SAL_PULSE_WAKEUP    (GPIO_NUM_32)               // Position of the GPIO pin.
 #define     SAL_MODE_WAKEUP     (GPIO_NUM_33)               // Position of the GPIO pin.
-#define     PBTN_F_WAKEUP       (2^GPIO_NUM_37)             // Position of the GPIO pin.
+#define     PBTN_F_WAKEUP       (2^PBTN_F)                  // Position of the GPIO pin.
 #define     PBTN_T_WAKEUP       (2^PBTN_T)                  // Position of the GPIO pin.
 #define     SYS_INT_WAKEUP      (2^SYS_INT)                 // Position of the GPIO pin.
 #define     uS2S_Facter         (1000000u)                  // Conversion factor for micro seconds to seconds.
-#define     Sec_Sleep           (3600u)                     // Time ESP32 will go to sleep (in seconds).
-#define     SleepTime           (uS2S_Facter*Sec_Sleep)     // Sleep-Time in µS.
+#define     Sec_Sleep_L         (3600u)                     // Time ESP32 will go to sleep-Long time (in seconds).
+#define     Sec_Sleep_S         (1200u)                     // Time ESP32 will go to sleep-Short time (in seconds).
+#define     SleepTime_L         (uS2S_Facter*Sec_Sleep_L)   // Sleep-Time-Long in µS.
+#define     SleepTime_S         (uS2S_Facter*Sec_Sleep_S)   // Sleep-Time-Short in µS.
 
 //──────────────────────── UNIT MODE BIT DEFINITIONS ──────────────────────────
 /*
@@ -304,7 +332,7 @@
 #define     IMU_PWR_FLAG        (8u)                        // IMU-PoWeR-FLAG.
 #define     SD_LOG_FLAG         (9u)                        // µSD Card-LOGger-FLAG.                (1=Passed tests and ready for data, 0=Failed tests.)
 
-#define     SCR_TGL_FLAG        (10u)                        // ToGgLe-SCReen-FLAG.
+#define     SCR_TGL_FLAG        (10u)                       // ToGgLe-SCReen-FLAG.
 #define     PWR_DSP_FLAG        (11u)                       // PoWeR-DiSPlay-screen-FLAG.
 #define     SAL_DSP_FLAG        (12u)                       // SALutron-DiSPlay-screen-FLAG.
 #define     SCR_DSP_FLAG        (13u)                       // SCReeN-DiSPlay-FLAG.
@@ -315,9 +343,9 @@
 
 #define     PBTN_DET_FLAG       (17u)                       // SET when a button press is detected.
 
-
 */
 //────────────────────────── UNIT TIMER DEFINITIONS ───────────────────────────
+
 /*
 #define     LED_ON_TMR          (0u)                        // Position of the TiMeR in the UNIT_TMRS array.
 #define     LCD_ON_TMR          (1u)                        // Position of the TiMeR in the UNIT_TMRS array.
@@ -328,6 +356,7 @@
 #define     sPULSE_HIGH_TMR     (6u)                        // Position of the TiMeR in the UNIT_TMRS array.
 #define     sPULSE_LOW_TMR      (7u)                        // Position of the TiMeR in the UNIT_TMRS array.
 */
+
 //───────────────────────────── Salutron-MACROS ───────────────────────────────
 
 #define     NoSalutronInput     ((digitalRead(SAL_PULSE))&&(digitalRead(SAL_MODE)))

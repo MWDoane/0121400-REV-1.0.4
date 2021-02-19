@@ -14,7 +14,7 @@
     Project:    M5CP Salutron-Phantom-Detecter
     Author:     Mark Doane
     Date:       12/30/20
-    File:       Main.c                -Mainlooping program.
+    File:       Main.c                -Main Looping code.
     Software:   0121400               -Software number.
     Board:      M5Stick-C Plus        -Color Display, WiFi, Bluetooth, Three switchs, Red & Ir LEDs, IMU, PMU, RTC, Various I/O.
                                        will include an external 18650 Hat, and a proto Hat with the µSD data logger.  Interface
@@ -40,13 +40,20 @@
                  time, the unit will shut off ALL perphials and enter
                  deep sleep.  The opposite is turn upon wake up.
 
-    02/16/21    0121400-REV-1.0.4.                 
-                -In this version, the IMU will be fixed, as the wake on
-                 motion was not working propperly and removed from earlier
-                 versions.  The control variables will now be located in
-                 a single 32-bit variable with bit manipulation to control
-                 the various control states and flags.
-                 
+    02/18/21    0121400-REV-1.0.4.                 
+                -This version will have the ability to use the IMU to
+                 determine if a person is using the equipment.  Upon 
+                 initial Power-up after the device is mounted and secure,
+                 the IMU is calibrated to it's final position.  If the
+                 salutron wakes the unit, the software checks for motion.
+                 If motion exists, the unit goes back to sleep an sets
+                 the unit to be woke after 20 minutes to check to see
+                 if motion still exists.  If not, the periodic wakeup
+                 time is set back to 60 minutes, and the Salutron pulse
+                 input is re-enabled to allow the sPulse line to wake
+                 the unit from deepsleep.  This should be the final
+                 software iteration with the current set of perphials.
+
 ─────────────────────────────────────────────────────────────────────
 */
 
@@ -61,6 +68,8 @@ void loop(void)
 // CHECK VARIOUS FUNCTION:    Check Button, Change/update current selected screen.
 //─────────────────────────────────────────────────────────────────────────────    
 
+  if(MotionCheck())                             // Check for a person on the equipment.
+    {   LPM_ShutDown();   }                     // If so, power down.
     ButtonCheck();                              // Check the Push Buttons.
     BackLightControl();                         // See if BackLight need to be changed.
     DisplayPowerMonitor();                      // See if the Power-Monitor screen is to be Displayed.
