@@ -51,8 +51,9 @@
                  if motion still exists.  If not, the periodic wakeup
                  time is set back to 60 minutes, and the Salutron pulse
                  input is re-enabled to allow the sPulse line to wake
-                 the unit from deepsleep.  This should be the final
-                 software iteration with the current set of perphials.
+                 the unit from deepsleep.  Only further additions would
+                 be communication via Blutooth.
+                 
 
 ─────────────────────────────────────────────────────────────────────
 */
@@ -68,6 +69,8 @@ void loop(void)
 // CHECK VARIOUS FUNCTION:    Check Button, Change/update current selected screen.
 //─────────────────────────────────────────────────────────────────────────────    
 
+    if(MotionCheck())
+    {   LPM_ShutDown();  }
     ButtonCheck();                              // Check the Push Buttons.
     BackLightControl();                         // See if BackLight need to be changed.
     DisplayPowerMonitor();                      // See if the Power-Monitor screen is to be Displayed.

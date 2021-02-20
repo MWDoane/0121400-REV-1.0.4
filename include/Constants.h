@@ -126,6 +126,7 @@
 #define     SD_LGR_TME          (150u)                      // µSD Card-LoGgeR-TiME in mS.
 #define     SYS_ACT_TME         (25000u)                    // SYStem-ACTivity-TiME in mS.
 #define     DSP_MODE_TME        (250u)                      // SYStem-ACTivity-TiME in mS.
+#define     IMU_CHK_TME         (500u)                      // SYStem-ACTivity-TiME in mS.
 
 //───────────────────────── VCP-Command DEFINITIONS ───────────────────────────
 

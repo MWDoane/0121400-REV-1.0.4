@@ -300,6 +300,7 @@ void    setup(void)                                             // setup Functio
         I2C.endTransmission();    
    }
     VCP.print("PMU Ready.\r\n");
+    VCP.print("IMU Ready.\r\n");
 #endif    
 
 //─────────────────────────────────────────────────────────────────────────────  
@@ -312,14 +313,6 @@ if(!SKIP_INIT)
     IMU.Init();
     VCP.print("IMU Initializing");
     IMU_Calibration();
-}
-
-//────────────────────────── IMU Check for Motion ─────────────────────────────
-
-if(SKIP_INIT)
-{
-    if(MotionCheck())                             // Check for a person on the equipment.
-        {   LPM_ShutDown();   }                   // If so, power down.
 }
 
 //───────────────────── Real-Time-Clock INITIALIZATION ────────────────────────

@@ -93,7 +93,8 @@ _Bool   ButtonCheck(void)
         {           
             LCD_BL_EN_FLAG=CLEAR;
             LCD_ON_TMR=LCD_ON_TME;
-            VCP.print("BackLight Enable\r\n");
+//            VCP.print("BackLight Enable\r\n");
+            PBTN_DB_TMR=PBTN_DB_TME;
             return CLEAR;
         }
 
@@ -225,13 +226,10 @@ void    DisplaySplash(void)
         LCD.pushImage(0, 0, logoWidth, logoHeight, (uint16_t *)TF_logo);
         LCD.setTextColor(YELLOW);
         VCP.println("Display Ready.");
-        LCD.drawString("M5P-SPD  REV-1.0.3",5,80,4);  
+        LCD.drawString("M5P-SPD  REV-1.0.4",5,80,4);  
         LCD.drawString(String(RTC_Date.Month)+"-"+ 
                        String(RTC_Date.Date)+"-" + 
-                       String(RTC_Date.Year)+"  "+
-                       String(RTC_Time.Hours)+":"+
-                       String(RTC_Time.Minutes),5,105,4);
-
+                       String(RTC_Date.Year),5,105,4);
         delay(5000);                    
     }
     return;
@@ -510,45 +508,55 @@ _Bool    MotionCheck(void)
 {
     if(SAL_SIG_DET)
     {
-        IMU_DET_FLAG=CLEAR;
-        PMIC.setGPIO0(IMU_PWR_ON);
-        delay(25);
-        IMU.Init();
-        I2C.beginTransmission(IMU_ADR);
-        I2C.write(IMU_ACCEL_CFG_1);
-        I2C.requestFrom(IMU_ADR, 1);
-        I2C_BFR[0]=I2C.read();
-        I2C.endTransmission();      
-        I2C_BFR[0]=I2C_BFR[0] & (~ACCEL_FS_SEL);
-        I2C_BFR[0]=I2C_BFR[0] | (ACCEL_FS_2g);
-        I2C.beginTransmission(IMU_ADR);
-        I2C.write(IMU_ACCEL_CFG_1);
-        I2C.write(I2C_BFR[0]);
-        I2C.endTransmission();
-        IMU_CHK_TMR=250;
-        IMU_DET_FLAG=CLEAR;
-        do
+        if(!IMU_CHK_TMR)
         {
-            IMU.getAccelData(&accX,&accY,&accZ);    
-            accX=(int(accX*100)-int(AVG_ACC_X));
-            accY=(int(accY*100)-int(AVG_ACC_Y));        
-            accZ=(int(accZ*100)-int(AVG_ACC_Z));        
-            if((int(accX)>IMU_DET_THLD) || (int(accX)<(IMU_DET_THLD*-1)))
-            {   IMU_DET_FLAG=SET;   }
-            if((int(accY)>IMU_DET_THLD) || (int(accY)<(IMU_DET_THLD*-1)))
-            {   IMU_DET_FLAG=SET;   }
-            if((int(accZ)>IMU_DET_THLD) || (int(accZ)<(IMU_DET_THLD*-1)))
-            {   IMU_DET_FLAG=SET;   }
-            delay(10);
+            IMU_DET_FLAG=CLEAR;
+            PMIC.setGPIO0(IMU_PWR_ON);
+            delay(25);
+            IMU.Init();
+            I2C.beginTransmission(IMU_ADR);
+            I2C.write(IMU_ACCEL_CFG_1);
+            I2C.requestFrom(IMU_ADR, 1);
+            I2C_BFR[0]=I2C.read();
+            I2C.endTransmission();      
+            I2C_BFR[0]=I2C_BFR[0] & (~ACCEL_FS_SEL);
+            I2C_BFR[0]=I2C_BFR[0] | (ACCEL_FS_2g);
+            I2C.beginTransmission(IMU_ADR);
+            I2C.write(IMU_ACCEL_CFG_1);
+            I2C.write(I2C_BFR[0]);
+            I2C.endTransmission();
+            IMU_CHK_TMR=50;
+            IMU_DET_FLAG=CLEAR;
+            do
+            {
+                IMU.getAccelData(&accX,&accY,&accZ);    
+                accX=(int(accX*100)-int(AVG_ACC_X));
+                accY=(int(accY*100)-int(AVG_ACC_Y));        
+                accZ=(int(accZ*100)-int(AVG_ACC_Z));        
+                if((int(accX)>IMU_DET_THLD) || (int(accX)<(IMU_DET_THLD*-1)))
+                {   
+                    IMU_DET_FLAG=SET;
+                }
+                if((int(accY)>IMU_DET_THLD) || (int(accY)<(IMU_DET_THLD*-1)))
+                {   
+                    IMU_DET_FLAG=SET;
+                }            
+                if((int(accZ)>IMU_DET_THLD) || (int(accZ)<(IMU_DET_THLD*-1)))
+                {   
+                    IMU_DET_FLAG=SET;
+                }                        
+                delay(10);
+            }
+            while(IMU_CHK_TMR);
+            PMIC.setGPIO0(IMU_PWR_OFF);
+            IMU_CHK_TMR=IMU_CHK_TME;
+            if(IMU_DET_FLAG)
+            {   
+                VCP.print("Motion Detected!: ");      
+                VCP.printf("X:%d  Y:%d  Z:%d\r\n", (int)accX, (int)accY, (int)accZ);        
+            }
+            return  IMU_DET_FLAG;
         }
-        while(IMU_CHK_TMR);
-        PMIC.setGPIO0(IMU_PWR_OFF);
-        if(IMU_DET_FLAG)
-        {   
-            VCP.print("Motion Detected!\r\n");      
-            VCP.printf("X:%d  Y:%d  Z:%d   ", (int)accX, (int)accY, (int)accZ);        
-        }
-        return  IMU_DET_FLAG;
     }
     return  CLEAR;
 }
@@ -811,6 +819,9 @@ Returns:        Nothing.
 
 void    LPM_ShutDown(void)
 {
+    // Wait for remaining data to be written to the SD card.
+//    while(!SD_LGR.available());
+
     // Save these registers to RTC memory.
     DS_CRNT_PULSE_CNT=CRNT_PULSE_CNT;
     DS_PRVS_PULSE_CNT=PRVS_PULSE_CNT;
